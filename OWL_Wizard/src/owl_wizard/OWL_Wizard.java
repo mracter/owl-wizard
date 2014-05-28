@@ -127,6 +127,13 @@ public class OWL_Wizard extends javax.swing.JFrame {
         }
         
         
+        String ans = JOptionPane.showInputDialog(this, "What do you want to do with your ontology?"
+                + "\n - Model large class hierarchies with relatively simple relationships"
+                + "\n - Query A-Box members with the same time efficiency as a Relational Database"
+                + "\n - Alongside a forwar-chaining rule-system");
+        
+        
+        
     }//GEN-LAST:event_startButtonActionPerformed
 
     /**
