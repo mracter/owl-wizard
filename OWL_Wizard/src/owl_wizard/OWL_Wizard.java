@@ -8,6 +8,10 @@ package owl_wizard;
 
 import javax.swing.JOptionPane;
 import java.util.*;
+import java.io.*;
+
+
+
 
 /**
  *
@@ -22,7 +26,10 @@ public class OWL_Wizard extends javax.swing.JFrame {
     
     //Store all the possible languages here
     
-    
+    TreeSet<String> owl2_dl;
+    TreeSet<String> owl2_rl;
+    TreeSet<String> owl2_ql;
+    TreeSet<String> owl2_el;
     
     
     public OWL_Wizard() {
@@ -40,102 +47,119 @@ public class OWL_Wizard extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        startButton = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new java.awt.CardLayout());
 
-        startButton.setText("START");
-        startButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                startButtonActionPerformed(evt);
-            }
-        });
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1101, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 623, Short.MAX_VALUE)
+        );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(399, 399, 399)
-                .addComponent(startButton)
-                .addContainerGap(427, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(378, Short.MAX_VALUE)
-                .addComponent(startButton)
-                .addGap(162, 162, 162))
-        );
+        getContentPane().add(jPanel1, "card1");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
-        
-        
-        candidates.put("OWL", new LinkedList<String>());
-        candidates.put("OWL2", new LinkedList<String>());
-        
-        candidates.get("OWL").add("OWL Full");
-        candidates.get("OWL").add("OWL DL");
-        candidates.get("OWL").add("OWL Lite");
-        
-        candidates.get("OWL2").add("OWL2 DL");
-        candidates.get("OWL2").add("OWL2-EL");
-        candidates.get("OWL2").add("OWL2-QL");
-        candidates.get("OWL2").add("OWL2-RL");
-        candidates.get("OWL2").add("OWL2 Full");
-       
-
-        
-        //Choose between OWL and OWL2-DL
-        int answer = JOptionPane.showConfirmDialog(this, "Do you need any one of the following constructs:"
-                + "\n - Qualified Cardinality" 
-                + "\n - Property propagation over transitive relationships"
-                + "\n - Properties of properties"
-                + "\n - Range-restricted data properties"
-                + "\n - Aggregation Functions"
-                + "\n - Primary key constraints on data properties"
-                + "\n - Binary relationships between data properties on the same object");
-        
-        
-        if (answer == JOptionPane.YES_OPTION)
-                candidates.remove("OWL");    
-                
-        
-        answer = JOptionPane.showConfirmDialog(this, "Do you need any one of the following constructs?"
-            + "\n - Disjunction"
-            + "\n - Cardinality Restrictions");
-        
-        
-        if (answer == JOptionPane.YES_OPTION)
+    //read in all the language feature constructs
+    private void readFile ()
+    { 
+      System.out.println(System.getProperty("user.dir"));
+      
+      owl2_dl = new TreeSet<String>();
+      owl2_rl = new TreeSet<String>();      
+      owl2_ql = new TreeSet<String>();
+      owl2_el = new TreeSet<String>();
+      
+        try
         {
-            candidates.get("OWL2").remove("OWL2-QL");
-            candidates.get("OWL2").remove("OWL2-EL");
+         Scanner scan = new Scanner (new File(System.getProperty("user.dir") + "/txt/OWL2-DL"));
+         
+         String category = "";
+         
+         //add each construct to the set for this species, appended with the category under which it belongs
+         while (scan.hasNextLine())
+         {
+             String line = scan.nextLine();
+             
+             if (line.trim().equals("") && scan.hasNextLine())
+                category = scan.nextLine();
+             else
+             {
+                 owl2_dl.add(category + " " + line);
+             }
+             
+         }
+         
+         
+         scan = new Scanner (new File (System.getProperty("user.dir") + "/txt/OWL2-EL"));
+         
+         //add each construct to the set for this species, appended with the category under which it belongs
+         while (scan.hasNextLine())
+         {
+             String line = scan.nextLine();
+             
+             if (line.trim().equals("") && scan.hasNextLine())
+                category = scan.nextLine();
+             else
+                owl2_el.add(category + " " + line);
+             
+         }
+         
+         
+         scan = new Scanner (new File (System.getProperty("user.dir") + "/txt/OWL2-QL"));
+         
+         //add each construct to the set for this species, appended with the category under which it belongs
+         while (scan.hasNextLine())
+         {
+             String line = scan.nextLine();
+             
+             if (line.trim().equals("") && scan.hasNextLine())
+                category = scan.nextLine();
+             else
+                owl2_ql.add(category + " " + line);
+             
+         }
+         
+         scan = new Scanner (new File (System.getProperty("user.dir") + "/txt/OWL2-RL"));
+         
+         //add each construct to the set for this species, appended with the category under which it belongs
+         while (scan.hasNextLine())
+         {
+             String line = scan.nextLine();
+             
+             if (line.trim().equals("") && scan.hasNextLine())
+                category = scan.nextLine();
+             else
+                owl2_rl.add(category + " " + line);
+             
+         }         
+                 
+         
+        }
+        catch (FileNotFoundException f)
+        {
+            System.out.println("File Not Found.");
+            System.exit(0);
+            
         }
         
         
         
         
-        answer = JOptionPane.showConfirmDialog(this, "Do you wish to use a reasoner on your ontology?");
-        
-        if (answer == JOptionPane.YES_OPTION)
-        {
-            candidates.get("OWL").remove("OWL Full");
-            candidates.get("OWL2").remove("OWL2 Full");
-        }
-        
-        
-        String ans = JOptionPane.showInputDialog(this, "What do you want to do with your ontology?"
-                + "\n - Model large class hierarchies with relatively simple relationships"
-                + "\n - Query A-Box members with the same time efficiency as a Relational Database"
-                + "\n - Alongside a forwar-chaining rule-system");
-        
-        
-        
-    }//GEN-LAST:event_startButtonActionPerformed
+    }
+    
 
+    
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -172,6 +196,6 @@ public class OWL_Wizard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton startButton;
+    private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }

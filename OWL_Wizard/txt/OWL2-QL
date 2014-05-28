@@ -1,0 +1,72 @@
+
+Language Feature:
+intersection
+union	
+complement
+
+Object Property Restrictions:
+universal	
+existential	
+individual 
+local reflexivity	
+
+Data Property Restrictions:
+universal	
+existential	
+literal
+
+Restrictions Using n-ary Data Range:
+n-ary universal
+n-ary existential	
+
+Object Property Expressions:
+named object property	
+universal object property	
+empty object 
+inverse property	
+
+Data Property Expressions:
+named data property	
+universal data property	
+empty data property	
+
+Data Range Expressions:
+data range complement	
+data range intersection	
+data range union
+datatype restriction
+
+Class Expression Axioms:
+subclass	
+equivalent classes	
+disjoint classes	
+pairwise disjoint classes	
+disjoint union
+negation
+
+Object Property Axioms:
+subproperty	
+property chain inclusion	
+property domain	
+property range	
+equivalent properties	
+disjoint properties	
+pairwise disjoint properties	
+inverse properties	
+reflexive
+irreflexive property	
+symmetric property	
+asymmetric property	
+negative property
+
+Declarations:
+class
+datatype	
+object property	
+data property
+annotation property	
+named individual	
+
+
+
+
