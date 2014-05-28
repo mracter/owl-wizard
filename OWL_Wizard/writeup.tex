@@ -1,6 +1,77 @@
-\documentclass{article}
+\documentclass[a4paper,titlepage,11pt]{scrartcl}
 
-\maketitle
+\usepackage[utf8]{inputenc}
+\usepackage[backend=biber]{biblatex}
+\usepackage{graphicx}
+%\usepackage{mathtools}
+%\usepackage{amsthm}
+%\usepackage{amssymb}
+%\usepackage{caption}
+%\usepackage{subcaption}
+\usepackage{csquotes}
+%\usepackage{tikz}
+\graphicspath{{./images/}}
+
+\bibliography{writeup.bib}
 \begin{document}
 
+\title{OWL 2 Profile Recommender System}
+\author{Alexander Borysov and Mary Hsu}
+\maketitle
+\abstract{The Web Ontology Language 2 (OWL 2) is a popular web standard for representing ontologies. Three functional subsets of OWL 2, called profiles, have been defined by the World Wide Web Consortium (W3C) to allow the efficient reasoning on, and querying of, the ontologies written using these profiles. The caveat to this is that the choice of profile is not a trivial task; it involves the understanding of numerous subtle ontological concepts. In this report, we present a tool that permits a domain expert not deeply familiar with the field of ontology engineering to choose an OWL 2 profile that suits their own intended knowledge domain.}
+%{\let\newpage\relax\maketitle }
+%\tableofcontents
+
+\section{Introduction}
+The Web Ontology Language (OWL) is a popular web standard for representing ontologies. It is a World Wide Web Consortium (W3C) recommendation, and it enjoys widespread use and tool support. However, the demand for state-of-the-art performance and scalability to match that of the far more common relational database systems, has led to the emergence of performance-oriented dialects, or species, of OWL~\cite{w3owl1guide}.\\
+
+Despite the popularity of OWL, several practical issues have surfaced with regard to the language design~\cite{nextowlstep}; to correct this, W3C have since adopted a successor standard, OWL 2, in 2009~\cite{w3owl2overview}. OWL 2 has many improvements over its predecessor, both in synctactical convenience and linguistic expressivity, while retaining similar computational guarantees~\cite{w3owl2new}. For these reasons, as well as the fact that it's the new W3C-endorsed standard~\cite{w3owl2overview}, we will be focusing solely on OWL 2 in this report.\\
+
+Much like the original OWL language, OWL 2 has a notion of restricted subsets of the language that tradeoff expressiveness in exchange for performance. These are called OWL 2 Profiles, and there are three such profiles officially defined by W3C:\\
+\paragraph{OWL 2 EL}
+OWL 2 EL focuses on allowing ontologies with large taxonomies in terms of class and property count. It is able to perform reasoning in polynomial time on ontology size~\cite{w3owl2profiles}. It is based on the EL family of description logics, wherein only existential quantification is provided; universal quantification is not~\cite{w3owl2profiles}.
+\paragraph{OWL 2 QL}
+OWL 2 QL focuses on allowing a large number of instances, and LOGSPACE conjunctive queries. In this sense, it rivals the performance of a database; in fact, OWL 2 QL is able to efficiently rewrite its queries into a conventional relational query language~\cite{w3owl2profiles}.
+\paragraph{OWL 2 RL}
+OWL 2 RL ontologies are limited in such a way that their reasoners can be implemented using rule-based reasoning systems. Both reasoning and answering conjunctive queries can be done in polynomial time on the size of the ontology~\cite{w3owl2profiles}.
+\paragraph{}
+Each of these profiles make different tradeoffs to permit improved querying or reasoning abilities. However, the differences between the profiles are subtle and far-reaching, and domain experts may not necessarily have the technical knowledge to make an effective choice. If an effective decision is not made, one could end up with an underperforming, or worse, undecidable ontology that is of limited to no use to the researchers creating it.\\
+
+Our work thus aims to develop a tool to ease the process of selecting an OWL 2 profile for a given ontology. We believe this work is important due to how nuanced the ontological differences between the OWL 2 profiles are, and how ontologies are increasingly being used by researchers outside of the field of Ontology Engineering as a tool to model their respective domains.\\
+
+In this report, we will outline the current state of the available software that addresses this problem, the design and implementation of our own solution, and the degree to which our implementation addresses the perceived problems with the task of choosing a profile.
+
+\section{Previous work}
+While the differences between each of the OWL 2 profiles and the exact advantages and disadvantages are very well documented~\cite{w3owl2profiles}, there is no tooling available to actually guide a user through the choice of a profile.\\
+
+Literature in the field largely focuses on cross-language feature comparisons~\cite{funkysurvey}, nevertheless usually mentioning OWL profiles~\cite{oelanguagesurvey}. However, this is not addressing the core issue we intend to remedy; namely, the lack of accessible tooling for domain experts who are not well-versed in ontological theory to make informed OWL 2 profile decisions.
+
+\section{Design}
+Our solution takes the form of a graphical `wizard' application \--- an application that guides the user by asking questions about their intentions and the anticipated concept and relationship types that will be used, with the eventual goal of settling on a profile recommendation. We start by asking general questions about the nature of the ontology; whether it will contain many instances, or many nested classes, and whether it is planned to be used largely for reasoning, or query answering. The answers for these basic questions map fairly simply to the profiles. Thereafter, we perform an additional step of confirming some of the actual language features that the user deems necessary for the development of their ontology. Based on this information, we can recommend the closest profile that matches their required linguistic features and overall high-level use case. \\
+
+The secondary aim of our solution is to provide a basic understanding of the other profiles that were not necessarily recommended. In line with this, we make a brief note to the user at the beginning of the recommendation process to outline the reasons behind the choice to exclusively recommend OWL 2 over OWL. This is to promote awareness of the general space of ontology languages without detracting much focus on their particular use case.\\
+
+Additionally, if, for instance, our system recommends OWL 2 QL to a user, it will also briefly describe OWL 2 EL if it was a near match for their requirements. The idea behind this approach is that if the user later finds their requirements shifting, they will be aware of the existence of other options available to them.\\
+
+\section{Discussion}
+Our developed system is a good and simple to use tool for choosing an OWL 2 profile. However, we found that beyond the initial targeting of the high-level intentions of each profile, it was difficult to cleanly resolve the profiles based on their low-level features such as property types and relationship restrictions. This led to the need of asking the user directly about the types of concepts and relationships they intend to use in their ontology, somewhat negating the anticipated user friendliness advantages.\\
+
+\section{Conclusions}
+Our tool shows promise of answering simple questions about the available profiles; however, using it to a deeper degree still requires knowledge in the domain of ontology engineering to make an effective choice. Our solution nevertheless represents a step in the right direction; however, perhaps a deeper effort to classify the various restrictions is required to make a truly huge leap.
+\printbibliography
+\section{Addendum}
+\subsection*{Work split}
+Alexander Borysov
+\begin{itemize}
+    \item{Researched OWL/OWL 2 species/profiles}
+    \item{Wrote some of the presentation slides}
+    \item{Designed the interface on paper}
+    \item{Wrote the report}
+\end{itemize}
+Mary Hsu
+\begin{itemize}
+    \item{Researched OWL/OWL 2 species/profiles}
+    \item{Wrote some of the presentation slides}
+    \item{Programmed the project}
+\end{itemize}
 \end{document}
