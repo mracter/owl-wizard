@@ -6,12 +6,10 @@
 
 package owl_wizard;
 
-import javax.swing.JOptionPane;
 import java.util.*;
 import java.io.*;
-
-
-
+import javax.swing.*;
+import java.awt.*;
 
 /**
  *
@@ -19,25 +17,45 @@ import java.io.*;
  */
 public class OWL_Wizard extends javax.swing.JFrame {
 
-    /**
-     * Creates new form OWL_Wizard
-     */
-    
-    
-    //Store all the possible languages here
-    
+    //Store language features here
     TreeSet<String> owl2_dl;
     TreeSet<String> owl2_rl;
     TreeSet<String> owl2_ql;
     TreeSet<String> owl2_el;
     
+    //Store topchoices wrt features here
+    ArrayList<Candidate> topChoices;
+    
+    //Store candidates here;
+    ArrayList<Candidate> candidates;
+
+    HowUse howUse;
+    WhatConcepts whatConcepts;
+    Complexity complexity;
+    FeatureSelector featureSelector;
+    Finish finish;
     
     public OWL_Wizard() {
+        
+        
+        topChoices = new ArrayList<Candidate>();
+        
+        //initialise candidates
+        candidates = new ArrayList<Candidate>();
+        
+        candidates.add(new Candidate("OWL2-DL", 0));
+        candidates.add(new Candidate("OWL2-EL", 0));
+        candidates.add(new Candidate("OWL2-QL", 0));
+        candidates.add(new Candidate("OWL2-RL", 0));
+        
+        readFile();
+        
         initComponents();
+        
+     
     }
-    
-    TreeMap< String, LinkedList<String> > candidates = new TreeMap();
 
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -47,119 +65,169 @@ public class OWL_Wizard extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        cards = new javax.swing.JPanel();
+        nextButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        getContentPane().setLayout(new java.awt.CardLayout());
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1101, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 623, Short.MAX_VALUE)
-        );
+        cards.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        cards.setLayout(new java.awt.CardLayout());
+        howUse = new HowUse(candidates);
+        howUse.setName("Step 1");
+        whatConcepts = new WhatConcepts(candidates);
+        whatConcepts.setName("Step 2");
+        complexity = new Complexity(candidates);
+        complexity.setName("Step 3");
+        featureSelector = new FeatureSelector(topChoices, owl2_dl, owl2_el, owl2_ql, owl2_rl);
+        featureSelector.setName("Step 4");
+        finish = new Finish(candidates, featureSelector);
+        finish.setName("Step 5");
 
-        getContentPane().add(jPanel1, "card1");
+        cards.add(howUse, "Step 1");
+        cards.add(whatConcepts, "Step 2");
+        cards.add(complexity, "Step 3");
+        cards.add(featureSelector, "Step 4");
+        cards.add(finish, "Step 5");
+
+        nextButton.setFont(new java.awt.Font("Ubuntu Light", 0, 24)); // NOI18N
+        nextButton.setText("Next");
+        nextButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nextButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Ubuntu", 1, 36)); // NOI18N
+        jLabel1.setText("OWL2 Species Selector");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(94, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 809, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cards, javax.swing.GroupLayout.PREFERRED_SIZE, 800, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(101, 101, 101))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(425, 425, 425)
+                .addComponent(nextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(cards, javax.swing.GroupLayout.PREFERRED_SIZE, 650, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(nextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18))
+        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     //read in all the language feature constructs
-    private void readFile ()
-    { 
-      System.out.println(System.getProperty("user.dir"));
-      
-      owl2_dl = new TreeSet<String>();
-      owl2_rl = new TreeSet<String>();      
-      owl2_ql = new TreeSet<String>();
-      owl2_el = new TreeSet<String>();
-      
-        try
-        {
-         Scanner scan = new Scanner (new File(System.getProperty("user.dir") + "/txt/OWL2-DL"));
-         
-         String category = "";
-         
-         //add each construct to the set for this species, appended with the category under which it belongs
-         while (scan.hasNextLine())
-         {
-             String line = scan.nextLine();
-             
-             if (line.trim().equals("") && scan.hasNextLine())
-                category = scan.nextLine();
-             else
-             {
-                 owl2_dl.add(category + " " + line);
-             }
-             
-         }
-         
-         
-         scan = new Scanner (new File (System.getProperty("user.dir") + "/txt/OWL2-EL"));
-         
-         //add each construct to the set for this species, appended with the category under which it belongs
-         while (scan.hasNextLine())
-         {
-             String line = scan.nextLine();
-             
-             if (line.trim().equals("") && scan.hasNextLine())
-                category = scan.nextLine();
-             else
-                owl2_el.add(category + " " + line);
-             
-         }
-         
-         
-         scan = new Scanner (new File (System.getProperty("user.dir") + "/txt/OWL2-QL"));
-         
-         //add each construct to the set for this species, appended with the category under which it belongs
-         while (scan.hasNextLine())
-         {
-             String line = scan.nextLine();
-             
-             if (line.trim().equals("") && scan.hasNextLine())
-                category = scan.nextLine();
-             else
-                owl2_ql.add(category + " " + line);
-             
-         }
-         
-         scan = new Scanner (new File (System.getProperty("user.dir") + "/txt/OWL2-RL"));
-         
-         //add each construct to the set for this species, appended with the category under which it belongs
-         while (scan.hasNextLine())
-         {
-             String line = scan.nextLine();
-             
-             if (line.trim().equals("") && scan.hasNextLine())
-                category = scan.nextLine();
-             else
-                owl2_rl.add(category + " " + line);
-             
-         }         
-                 
-         
-        }
-        catch (FileNotFoundException f)
-        {
+    private void readFile() {
+
+        owl2_dl = new TreeSet<String>();
+        owl2_rl = new TreeSet<String>();
+        owl2_ql = new TreeSet<String>();
+        owl2_el = new TreeSet<String>();
+
+        try {
+            Scanner scan = new Scanner(new File(System.getProperty("user.dir") + "/txt/OWL2-DL"));
+
+            String category = "";
+
+            //add each construct to the set for this species, appended with the category under which it belongs
+            while (scan.hasNextLine()) {
+                String line = scan.nextLine();
+
+                if (line.trim().equals("") && scan.hasNextLine()) {
+                    category = scan.nextLine();
+                } else {
+                    owl2_dl.add(category + " " + line);
+                }
+
+            }
+
+            scan = new Scanner(new File(System.getProperty("user.dir") + "/txt/OWL2-EL"));
+
+            //add each construct to the set for this species, appended with the category under which it belongs
+            while (scan.hasNextLine()) {
+                String line = scan.nextLine();
+
+                if (line.trim().equals("") && scan.hasNextLine()) {
+                    category = scan.nextLine();
+                } else {
+                    owl2_el.add(category + " " + line);
+                }
+
+            }
+
+            scan = new Scanner(new File(System.getProperty("user.dir") + "/txt/OWL2-QL"));
+
+            //add each construct to the set for this species, appended with the category under which it belongs
+            while (scan.hasNextLine()) {
+                String line = scan.nextLine();
+
+                if (line.trim().equals("") && scan.hasNextLine()) {
+                    category = scan.nextLine();
+                } else {
+                    owl2_ql.add(category + " " + line);
+                }
+
+            }
+
+            scan = new Scanner(new File(System.getProperty("user.dir") + "/txt/OWL2-RL"));
+
+            //add each construct to the set for this species, appended with the category under which it belongs
+            while (scan.hasNextLine()) {
+                String line = scan.nextLine();
+
+                if (line.trim().equals("") && scan.hasNextLine()) {
+                    category = scan.nextLine();
+                } else {
+                    owl2_rl.add(category + " " + line);
+                }
+
+            }
+
+        } catch (FileNotFoundException f) {
             System.out.println("File Not Found.");
             System.exit(0);
-            
+
         }
         
-        
-        
-        
     }
-    
 
-    
-    
-    
+    private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
+
+              CardLayout cardLayout = (CardLayout) cards.getLayout();
+              
+              JPanel displayed = null;
+              
+              for (Component comp : cards.getComponents()) 
+              {
+                if (comp.isVisible() == true) 
+                {
+                  displayed = (JPanel) comp;
+                }
+              }
+              
+              if (displayed.getName() == "Step 5")
+              {
+                nextButton.setEnabled(false);  
+              }
+              else
+                cardLayout.next(cards);  
+    }//GEN-LAST:event_nextButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -196,6 +264,8 @@ public class OWL_Wizard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel cards;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton nextButton;
     // End of variables declaration//GEN-END:variables
 }
